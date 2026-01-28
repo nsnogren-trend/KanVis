@@ -1,0 +1,191 @@
+{
+  "name": "kanvis",
+  "displayName": "kanvis",
+  "description": "Kanban board to manage VS Code windows and workspaces - Rewritten for performance and extensibility",
+  "version": "2.0.0",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "kanvis.openBoard",
+        "title": "kanvis: Open Kanban Board"
+      },
+      {
+        "command": "kanvis.refreshBoard",
+        "title": "kanvis: Refresh Board"
+      },
+      {
+        "command": "kanvis.setWindowStatus",
+        "title": "kanvis: Set Window Status"
+      },
+      {
+        "command": "kanvis.notifyWindow",
+        "title": "kanvis: Send Notification to Window"
+      },
+      {
+        "command": "kanvis.addWorkspace",
+        "title": "kanvis: Add Workspace to Board"
+      },
+      {
+        "command": "kanvis.clearAll",
+        "title": "kanvis: Clear All Cards"
+      },
+      {
+        "command": "kanvis.editCard",
+        "title": "kanvis: Edit Current Card"
+      },
+      {
+        "command": "kanvis.undo",
+        "title": "kanvis: Undo Last Action"
+      },
+      {
+        "command": "kanvis.redo",
+        "title": "kanvis: Redo Last Action"
+      },
+      {
+        "command": "kanvis.moveToColumn1",
+        "title": "kanvis: Move Current Window to Column 1"
+      },
+      {
+        "command": "kanvis.moveToColumn2",
+        "title": "kanvis: Move Current Window to Column 2"
+      },
+      {
+        "command": "kanvis.moveToColumn3",
+        "title": "kanvis: Move Current Window to Column 3"
+      },
+      {
+        "command": "kanvis.moveToColumn4",
+        "title": "kanvis: Move Current Window to Column 4"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "kanvis.moveToColumn1",
+        "key": "ctrl+k ctrl+1",
+        "mac": "cmd+k cmd+1"
+      },
+      {
+        "command": "kanvis.moveToColumn2",
+        "key": "ctrl+k ctrl+2",
+        "mac": "cmd+k cmd+2"
+      },
+      {
+        "command": "kanvis.moveToColumn3",
+        "key": "ctrl+k ctrl+3",
+        "mac": "cmd+k cmd+3"
+      },
+      {
+        "command": "kanvis.moveToColumn4",
+        "key": "ctrl+k ctrl+4",
+        "mac": "cmd+k cmd+4"
+      },
+      {
+        "command": "kanvis.undo",
+        "key": "ctrl+z",
+        "mac": "cmd+z",
+        "when": "focusedView == 'kanvis.boardView'"
+      },
+      {
+        "command": "kanvis.redo",
+        "key": "ctrl+shift+z",
+        "mac": "cmd+shift+z",
+        "when": "focusedView == 'kanvis.boardView'"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "kanvis",
+          "title": "kanvis",
+          "icon": "$(preview)"
+        }
+      ]
+    },
+    "views": {
+      "kanvis": [
+        {
+          "type": "webview",
+          "id": "kanvis.boardView",
+          "name": "Kanban Board"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "kanvis",
+      "properties": {
+        "kanvis.columns": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "name": { "type": "string" },
+              "color": { "type": "string" },
+              "wipLimit": { "type": "number" }
+            },
+            "required": ["id", "name"]
+          },
+          "default": [
+            { "id": "backlog", "name": "Backlog" },
+            { "id": "in-progress", "name": "In Progress" },
+            { "id": "review", "name": "Review" },
+            { "id": "done", "name": "Done" }
+          ],
+          "description": "Kanban column definitions"
+        },
+        "kanvis.showClosedWindows": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show cards for closed windows"
+        },
+        "kanvis.compactView": {
+          "type": "boolean",
+          "default": false,
+          "description": "Use compact card view"
+        },
+        "kanvis.autoArchiveAfterDays": {
+          "type": "number",
+          "default": 0,
+          "description": "Automatically archive cards after N days of inactivity (0 = disabled)"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run package",
+    "compile": "npm run check-types && npm run lint && node esbuild.js",
+    "watch": "npm-run-all -p watch:*",
+    "watch:esbuild": "node esbuild.js --watch",
+    "watch:tsc": "tsc --noEmit --watch --project tsconfig.json",
+    "package": "npm run check-types && npm run lint && node esbuild.js --production",
+    "compile-tests": "tsc -p . --outDir out",
+    "watch-tests": "tsc -p . -w --outDir out",
+    "pretest": "npm run compile-tests && npm run compile && npm run lint",
+    "check-types": "tsc --noEmit",
+    "lint": "eslint src",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.85.0",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "22.x",
+    "typescript-eslint": "^8.52.0",
+    "eslint": "^9.39.2",
+    "esbuild": "^0.27.2",
+    "npm-run-all": "^4.1.5",
+    "typescript": "^5.9.3",
+    "@vscode/test-cli": "^0.0.12",
+    "@vscode/test-electron": "^2.5.2"
+  }
+}
+
