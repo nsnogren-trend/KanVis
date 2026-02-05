@@ -62,6 +62,29 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
       })
     );
 
+    // V5: Undo/Redo commands
+    context.subscriptions.push(
+      vscode.commands.registerCommand('kanvis4.undo', async () => {
+        const success = await boardService.undo();
+        if (success) {
+          vscode.window.showInformationMessage('KanVis: Undid last action');
+        } else {
+          vscode.window.showInformationMessage('KanVis: Nothing to undo');
+        }
+      })
+    );
+
+    context.subscriptions.push(
+      vscode.commands.registerCommand('kanvis4.redo', async () => {
+        const success = await boardService.redo();
+        if (success) {
+          vscode.window.showInformationMessage('KanVis: Redid action');
+        } else {
+          vscode.window.showInformationMessage('KanVis: Nothing to redo');
+        }
+      })
+    );
+
     console.log('[KanVis] Extension activated successfully');
   } catch (error) {
     console.error('[KanVis] Failed to activate:', error);
