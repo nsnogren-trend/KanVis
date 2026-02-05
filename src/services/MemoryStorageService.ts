@@ -42,4 +42,11 @@ export class MemoryStorageService implements IStorageService {
   getCurrentState(): BoardState {
     return this.state;
   }
+
+  /**
+   * Test helper: Get the watch callback for testing race conditions
+   */
+  getWatchCallback(): ((state: BoardState) => void) | undefined {
+    return this.watchers[0];
+  }
 }

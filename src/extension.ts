@@ -9,10 +9,16 @@
  * - Interface-based services
  * - Pure domain models
  * - Minimal coupling to VS Code APIs
+ * 
+ * V5 Enhancements:
+ * - Event sourcing with undo/redo
+ * - Runtime validation with Zod
+ * - CRDT-based synchronization (optional)
  */
 
 import * as vscode from 'vscode';
 import { StorageService } from './services/StorageService.js';
+import { CRDTStorageService } from './services/CRDTStorageService.js';
 import { BoardService } from './services/BoardService.js';
 import { WindowManager } from './services/WindowManager.js';
 import { BoardViewProvider } from './webview/BoardViewProvider.js';
@@ -25,8 +31,15 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
   console.log('[KanVis] Activating extension');
 
   try {
-    // Initialize services with dependency injection
-    const storageService = new StorageService(context);
+    // V5: Choose storage service based on configuration
+    const config = vscode.workspace.getConfiguration('kanvis');
+    const useCRDT = config.get<boolean>('enableCRDTSync', false);
+    
+    const storageService = useCRDT
+      ? new CRDTStorageService(context)
+      : new StorageService(context);
+    
+    console.log(`[KanVis] Using ${useCRDT ? 'CRDT' : 'standard'} storage service`);
     
     boardService = new BoardService(storageService);
     await boardService.initialize();
@@ -59,6 +72,29 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     context.subscriptions.push(
       vscode.commands.registerCommand('kanvis4.refreshBoard', async () => {
         await windowManager.registerCurrentWindow();
+      })
+    );
+
+    // V5: Undo/Redo commands
+    context.subscriptions.push(
+      vscode.commands.registerCommand('kanvis4.undo', async () => {
+        const success = await boardService.undo();
+        if (success) {
+          vscode.window.showInformationMessage('KanVis: Undid last action');
+        } else {
+          vscode.window.showInformationMessage('KanVis: Nothing to undo');
+        }
+      })
+    );
+
+    context.subscriptions.push(
+      vscode.commands.registerCommand('kanvis4.redo', async () => {
+        const success = await boardService.redo();
+        if (success) {
+          vscode.window.showInformationMessage('KanVis: Redid action');
+        } else {
+          vscode.window.showInformationMessage('KanVis: Nothing to redo');
+        }
       })
     );
 
