@@ -46,6 +46,16 @@
         "title": "KanVis: Redo Last Action"
       }
     ],
+    "configuration": {
+      "title": "KanVis",
+      "properties": {
+        "kanvis.enableCRDTSync": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable CRDT-based synchronization for conflict-free merging across multiple VS Code windows (experimental)"
+        }
+      }
+    },
     "viewsContainers": {
       "activitybar": [
         {
@@ -93,5 +103,9 @@
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3",
     "zod": "^4.3.6"
+  },
+  "dependencies": {
+    "lib0": "^0.2.117",
+    "yjs": "^13.6.29"
   }
 }
