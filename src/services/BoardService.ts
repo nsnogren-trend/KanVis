@@ -120,8 +120,11 @@ export class BoardService {
   async moveWindow(windowId: string, toColumnId: string, toOrder: number): Promise<void> {
     const window = findWindow(this.state, windowId);
     if (!window) {
+      console.warn('[BoardService] moveWindow: window not found:', windowId);
       return;
     }
+    
+    console.log('[BoardService] Moving window:', windowId, 'from', window.columnId, 'to', toColumnId);
     
     // V5: Record event for history
     const event: KanVisEvent = {
@@ -136,7 +139,10 @@ export class BoardService {
     this.history.recordEvent(event);
     
     this.state = moveWindow(this.state, windowId, toColumnId, toOrder);
+    console.log('[BoardService] State updated, lastModifiedAt:', this.state.lastModifiedAt);
+    
     await this.saveAndNotify();
+    console.log('[BoardService] Move completed and saved');
   }
 
   /**
