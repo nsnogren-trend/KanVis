@@ -150,6 +150,13 @@ export class CRDTStorageService implements IStorageService {
         
         // Extract merged state
         const mergedState = await this.boardSync.extractState();
+        
+        // Only notify if the state actually changed
+        if (mergedState.lastModifiedAt <= this.currentState.lastModifiedAt) {
+          console.log('[KanVis] CRDT sync: no new changes');
+          return;
+        }
+        
         this.currentState = mergedState;
         
         console.log('[KanVis] Merged external changes via CRDT');

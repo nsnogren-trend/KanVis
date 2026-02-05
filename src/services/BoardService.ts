@@ -46,7 +46,15 @@ export class BoardService {
     this.state = loadedState;
     
     // Watch for external changes
+    // Only update if the external state is newer (from another window)
     this.storage.watch((newState) => {
+      // Ignore if this is our own save (timestamp hasn't changed or is older)
+      if (newState.lastModifiedAt <= this.state.lastModifiedAt) {
+        console.log('[BoardService] Ignoring self-triggered file change');
+        return;
+      }
+      
+      console.log('[BoardService] Received external state update from another window');
       this.state = newState;
       this.notifyListeners();
     });
