@@ -2,7 +2,7 @@
   "name": "kanvis4",
   "displayName": "KanVis",
   "description": "Manage VS Code windows in a kanban-style sidebar - track your projects across multiple workspaces",
-  "version": "4.0.0",
+  "version": "5.0.0",
   "publisher": "kanvis",
   "license": "MIT",
   "repository": {
