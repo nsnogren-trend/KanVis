@@ -1,0 +1,26 @@
+{
+  "name": "@kanvis/core",
+  "version": "5.0.0",
+  "description": "Platform-agnostic domain logic for KanVis",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "test": "vitest",
+    "test:once": "vitest run"
+  },
+  "dependencies": {
+    "xstate": "^5.18.0",
+    "yjs": "^13.6.18",
+    "zod": "^3.23.8",
+    "nanoid": "^5.0.7"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.3.3",
+    "vitest": "^2.0.0",
+    "fast-check": "^3.20.0"
+  }
+}
