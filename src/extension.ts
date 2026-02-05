@@ -1,0 +1,83 @@
+/**
+ * KanVis 4 Extension Entry Point
+ * 
+ * This extension tracks open VS Code windows and displays them
+ * in a kanban-style board in the sidebar.
+ * 
+ * Rebuilt with testability as a first-class concern:
+ * - Dependency injection throughout
+ * - Interface-based services
+ * - Pure domain models
+ * - Minimal coupling to VS Code APIs
+ */
+
+import * as vscode from 'vscode';
+import { StorageService } from './services/StorageService.js';
+import { BoardService } from './services/BoardService.js';
+import { WindowManager } from './services/WindowManager.js';
+import { BoardViewProvider } from './webview/BoardViewProvider.js';
+
+let boardService: BoardService;
+let windowManager: WindowManager;
+let boardProvider: BoardViewProvider;
+
+export async function activate(context: vscode.ExtensionContext): Promise<void> {
+  console.log('[KanVis] Activating extension');
+
+  try {
+    // Initialize services with dependency injection
+    const storageService = new StorageService(context);
+    
+    boardService = new BoardService(storageService);
+    await boardService.initialize();
+
+    windowManager = new WindowManager(boardService, context);
+    await windowManager.initialize();
+
+    // Create and register webview provider
+    boardProvider = new BoardViewProvider(
+      context.extensionUri,
+      boardService,
+      windowManager
+    );
+
+    context.subscriptions.push(
+      vscode.window.registerWebviewViewProvider(
+        BoardViewProvider.viewType,
+        boardProvider,
+        { webviewOptions: { retainContextWhenHidden: true } }
+      )
+    );
+
+    // Register commands
+    context.subscriptions.push(
+      vscode.commands.registerCommand('kanvis4.openBoard', () => {
+        vscode.commands.executeCommand('kanvis4.boardView.focus');
+      })
+    );
+
+    context.subscriptions.push(
+      vscode.commands.registerCommand('kanvis4.refreshBoard', async () => {
+        await windowManager.registerCurrentWindow();
+      })
+    );
+
+    console.log('[KanVis] Extension activated successfully');
+  } catch (error) {
+    console.error('[KanVis] Failed to activate:', error);
+    throw error;
+  }
+}
+
+export async function deactivate(): Promise<void> {
+  console.log('[KanVis] Deactivating extension');
+
+  try {
+    if (windowManager) {
+      await windowManager.unregisterCurrentWindow();
+      windowManager.dispose();
+    }
+  } catch (error) {
+    console.error('[KanVis] Error during deactivation:', error);
+  }
+}
